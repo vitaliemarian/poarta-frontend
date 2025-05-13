@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+// frontend/src/components/GateForm.jsx
+
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 function GateForm() {
@@ -24,11 +26,18 @@ function GateForm() {
     });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const response = await axios.post('https://poarta-backend.onrender.com/calculate', formData);
-    setRezultat(response.data);
-  };
+  useEffect(() => {
+    const delayDebounce = setTimeout(async () => {
+      try {
+        const response = await axios.post('https://poarta-backend.onrender.com/calculate', formData);
+        setRezultat(response.data);
+      } catch (err) {
+        console.error('Eroare calcul:', err);
+      }
+    }, 300);
+
+    return () => clearTimeout(delayDebounce);
+  }, [formData]);
 
   const handleExportPdf = async () => {
     const response = await axios.post('https://poarta-backend.onrender.com/generate-pdf', rezultat, {
@@ -47,7 +56,7 @@ function GateForm() {
   return (
     <div style={{ maxWidth: '700px', margin: 'auto', padding: '20px' }}>
       <h2>Calculator Poartă Batantă ORIZONTAL</h2>
-      <form onSubmit={handleSubmit}>
+      <form className="space-y-4">
         <div>
           <label>Lungime (mm): </label>
           <input type="number" name="lungime" value={formData.lungime} onChange={handleChange} />
@@ -95,7 +104,6 @@ function GateForm() {
           <label>Reducere (%): </label>
           <input type="number" name="reducere" value={formData.reducere} onChange={handleChange} max="10" />
         </div>
-        <button type="submit">Calculează</button>
       </form>
 
       {rezultat && (
