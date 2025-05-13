@@ -27,19 +27,6 @@ function GateForm() {
     });
   };
 
-  const validInaltimi = useMemo(() => {
-    const [hLamela] = formData.lamele.split('x').map(Number);
-    const dist = Number(formData.distantaLamele);
-    const rezultat = [];
-    for (let n = 2; n < 50; n++) {
-      const inaltime = n * hLamela + (n - 1) * dist + 160;
-      if (inaltime >= 1000 && inaltime <= 2200) {
-        rezultat.push(inaltime);
-      }
-    }
-    return rezultat.reverse();
-  }, [formData.lamele, formData.distantaLamele]);
-
   const sugestiiDinInaltime = useMemo(() => {
     const rezultate = [];
     const tinta = Number(formData.inaltime);
@@ -55,6 +42,14 @@ function GateForm() {
     });
     return rezultate;
   }, [formData.inaltime]);
+
+  const aplicaSugestie = (sugestie) => {
+    setFormData(prev => ({
+      ...prev,
+      lamele: sugestie.lamele,
+      distantaLamele: sugestie.distanta
+    }));
+  };
 
   useEffect(() => {
     const delayDebounce = setTimeout(async () => {
@@ -93,9 +88,7 @@ function GateForm() {
         </div>
         <div>
           <label>Înălțime (mm): </label>
-          <select name="inaltime" value={formData.inaltime} onChange={handleChange}>
-            {Array.from({ length: 13 }, (_, i) => 1000 + i * 100).map(val => <option key={val} value={val}>{val}</option>)}
-          </select>
+          <input type="number" name="inaltime" value={formData.inaltime} onChange={handleChange} min="1000" max="2200" />
         </div>
         {sugestii.length > 0 && (
           <div style={{ backgroundColor: '#f8f8f8', padding: '10px', margin: '10px 0' }}>
@@ -104,6 +97,7 @@ function GateForm() {
               {sugestii.map((s, idx) => (
                 <li key={idx}>
                   Lamele {s.lamele}, distanță {s.distanta}mm, {s.bucati} bucăți
+                  <button onClick={() => aplicaSugestie(s)} style={{ marginLeft: '10px' }}>Aplică</button>
                 </li>
               ))}
             </ul>
