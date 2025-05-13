@@ -89,8 +89,8 @@ function GateForm() {
         <div>
           <label>Înălțime (mm): </label>
           <select name="inaltime" value={formData.inaltime} onChange={handleChange}>
-            {validInaltimi.map(val => (
-              <option key={val} value={val}>{val}</option>
+            {validInaltimi.map((val, idx) => (
+              <option key={val} value={val}>{val} mm</option>
             ))}
           </select>
         </div>
