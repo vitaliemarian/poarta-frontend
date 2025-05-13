@@ -36,7 +36,7 @@ function GateForm() {
         rezultat.push(inaltime);
       }
     }
-    return rezultat.reverse();
+    return rezultat.reverse().map((val, idx) => ({ inaltime: val, nrLamele: idx + 2 }));
   }, [formData.lamele, formData.distantaLamele]);
 
   useEffect(() => {
@@ -89,10 +89,12 @@ function GateForm() {
         <div>
           <label>Înălțime (mm): </label>
           <select name="inaltime" value={formData.inaltime} onChange={handleChange}>
-            {validInaltimi.map((val, idx) => (
-              <option key={val} value={val}>{val} mm</option>
-            ))}
-          </select>
+  {validInaltimi.map((item) => (
+    <option key={item.inaltime} value={item.inaltime}>
+      {item.inaltime} mm ({item.nrLamele} lamele)
+    </option>
+  ))}
+</select>
         </div>
         <div>
           <label>Culoare: </label>
