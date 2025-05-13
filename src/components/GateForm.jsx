@@ -142,7 +142,7 @@ function GateForm() {
             ))}
           </tbody>
         </table>
-      </div>$1
+      </div>
         <div style={{ marginTop: '20px', padding: '10px', border: '1px solid #ccc' }}>
           <h3>Rezultate:</h3>
           <ul>
