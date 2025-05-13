@@ -1,3 +1,5 @@
+// frontend/src/components/GateForm.jsx
+
 import React, { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
 
@@ -24,7 +26,6 @@ function GateForm() {
     });
   };
 
-  // Calculează înălțimile valide în funcție de lamele și distanță
   const validInaltimi = useMemo(() => {
     const [hLamela] = formData.lamele.split('x').map(Number);
     const dist = Number(formData.distantaLamele);
@@ -74,14 +75,6 @@ function GateForm() {
           <input type="number" name="lungime" value={formData.lungime} onChange={handleChange} />
         </div>
         <div>
-          <label>Înălțime (mm): </label>
-          <select name="inaltime" value={formData.inaltime} onChange={handleChange}>
-            {validInaltimi.map(val => (
-              <option key={val} value={val}>{val}</option>
-            ))}
-          </select>
-        </div>
-        <div>
           <label>Lamele: </label>
           <select name="lamele" value={formData.lamele} onChange={handleChange}>
             {['100x20', '80x20', '60x20', '40x20'].map(val => (
@@ -92,6 +85,14 @@ function GateForm() {
         <div>
           <label>Distanță între lamele (mm): </label>
           <input type="number" name="distantaLamele" value={formData.distantaLamele} onChange={handleChange} />
+        </div>
+        <div>
+          <label>Înălțime (mm): </label>
+          <select name="inaltime" value={formData.inaltime} onChange={handleChange}>
+            {validInaltimi.map(val => (
+              <option key={val} value={val}>{val}</option>
+            ))}
+          </select>
         </div>
         <div>
           <label>Culoare: </label>
