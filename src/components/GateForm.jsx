@@ -31,7 +31,7 @@ function GateForm() {
     const dist = Number(formData.distantaLamele);
     const rezultat = [];
     for (let n = 2; n < 50; n++) {
-      const inaltime = (n - 1) * (hLamela + dist) + hLamela + dist + 160;
+      const inaltime = n * (hLamela + dist) + dist + 160;
       if (inaltime >= 1000 && inaltime <= 2200) {
         rezultat.push(inaltime);
       }
