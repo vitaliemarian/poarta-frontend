@@ -124,7 +124,25 @@ function GateForm() {
         </div>
       </form>
 
-      {rezultat && (
+      <div style={{ marginTop: '20px' }}>
+        <h3>Înălțimi valide pentru aceste lamele și distanță:</h3>
+        <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '10px' }}>
+          <thead>
+            <tr>
+              <th style={{ border: '1px solid #ccc', padding: '5px' }}>Înălțime</th>
+              <th style={{ border: '1px solid #ccc', padding: '5px' }}>Număr lamele</th>
+            </tr>
+          </thead>
+          <tbody>
+            {validInaltimi.map((item) => (
+              <tr key={item.inaltime}>
+                <td style={{ border: '1px solid #ccc', padding: '5px' }}>{item.inaltime} mm</td>
+                <td style={{ border: '1px solid #ccc', padding: '5px' }}>{item.nrLamele}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>$1
         <div style={{ marginTop: '20px', padding: '10px', border: '1px solid #ccc' }}>
           <h3>Rezultate:</h3>
           <ul>
