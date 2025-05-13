@@ -1,5 +1,3 @@
-// frontend/src/components/GateForm.jsx
-
 import React, { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
 
@@ -17,7 +15,6 @@ function GateForm() {
   });
 
   const [rezultat, setRezultat] = useState(null);
-  const [sugestii, setSugestii] = useState([]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -27,42 +24,32 @@ function GateForm() {
     });
   };
 
-  const sugestiiDinInaltime = useMemo(() => {
-    const rezultate = [];
-    const tinta = Number(formData.inaltime);
-    [100, 80, 60, 40].forEach(h => {
-      for (let d = 20; d <= 100; d += 5) {
-        for (let n = 2; n < 50; n++) {
-          const total = n * h + (n - 1) * d + 160;
-          if (total === tinta) {
-            rezultate.push({ lamele: `${h}x20`, distanta: d, bucati: n });
-          }
-        }
+  // Calculează înălțimile valide în funcție de lamele și distanță
+  const validInaltimi = useMemo(() => {
+    const [hLamela] = formData.lamele.split('x').map(Number);
+    const dist = Number(formData.distantaLamele);
+    const rezultat = [];
+    for (let n = 2; n < 50; n++) {
+      const inaltime = n * hLamela + (n - 1) * dist + 160;
+      if (inaltime >= 1000 && inaltime <= 2200) {
+        rezultat.push(inaltime);
       }
-    });
-    return rezultate;
-  }, [formData.inaltime]);
-
-  const aplicaSugestie = (sugestie) => {
-    setFormData(prev => ({
-      ...prev,
-      lamele: sugestie.lamele,
-      distantaLamele: sugestie.distanta
-    }));
-  };
+    }
+    return rezultat.reverse();
+  }, [formData.lamele, formData.distantaLamele]);
 
   useEffect(() => {
     const delayDebounce = setTimeout(async () => {
       try {
         const response = await axios.post('https://poarta-backend.onrender.com/calculate', formData);
         setRezultat(response.data);
-        setSugestii(sugestiiDinInaltime);
       } catch (err) {
         console.error('Eroare calcul:', err);
       }
     }, 300);
+
     return () => clearTimeout(delayDebounce);
-  }, [formData, sugestiiDinInaltime]);
+  }, [formData]);
 
   const handleExportPdf = async () => {
     const response = await axios.post('https://poarta-backend.onrender.com/generate-pdf', rezultat, {
@@ -88,41 +75,18 @@ function GateForm() {
         </div>
         <div>
           <label>Înălțime (mm): </label>
-          <input type="number" name="inaltime" value={formData.inaltime} onChange={handleChange} min="1000" max="2200" />
+          <select name="inaltime" value={formData.inaltime} onChange={handleChange}>
+            {validInaltimi.map(val => (
+              <option key={val} value={val}>{val}</option>
+            ))}
+          </select>
         </div>
-
-        {sugestii.length > 0 && (
-          <div style={{ backgroundColor: '#f8f8f8', padding: '10px', margin: '10px 0' }}>
-            <strong>Sugestii pentru această înălțime:</strong>
-            <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '10px' }}>
-              <thead>
-                <tr>
-                  <th style={{ border: '1px solid #ccc', padding: '5px' }}>Lamele</th>
-                  <th style={{ border: '1px solid #ccc', padding: '5px' }}>Distanță (mm)</th>
-                  <th style={{ border: '1px solid #ccc', padding: '5px' }}>Bucăți</th>
-                  <th style={{ border: '1px solid #ccc', padding: '5px' }}>Actiune</th>
-                </tr>
-              </thead>
-              <tbody>
-                {sugestii.map((s, idx) => (
-                  <tr key={idx}>
-                    <td style={{ border: '1px solid #ccc', padding: '5px' }}>{s.lamele}</td>
-                    <td style={{ border: '1px solid #ccc', padding: '5px' }}>{s.distanta}</td>
-                    <td style={{ border: '1px solid #ccc', padding: '5px' }}>{s.bucati}</td>
-                    <td style={{ border: '1px solid #ccc', padding: '5px' }}>
-                      <button onClick={() => aplicaSugestie(s)}>Aplică</button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-
         <div>
           <label>Lamele: </label>
           <select name="lamele" value={formData.lamele} onChange={handleChange}>
-            {['100x20', '80x20', '60x20', '40x20'].map(val => <option key={val} value={val}>{val}</option>)}
+            {['100x20', '80x20', '60x20', '40x20'].map(val => (
+              <option key={val} value={val}>{val}</option>
+            ))}
           </select>
         </div>
         <div>
@@ -132,7 +96,9 @@ function GateForm() {
         <div>
           <label>Culoare: </label>
           <select name="culoare" value={formData.culoare} onChange={handleChange}>
-            {['Nu', 'RAL1', 'RAL2'].map(val => <option key={val} value={val}>{val}</option>)}
+            {['Nu', 'RAL1', 'RAL2'].map(val => (
+              <option key={val} value={val}>{val}</option>
+            ))}
           </select>
         </div>
         <div>
