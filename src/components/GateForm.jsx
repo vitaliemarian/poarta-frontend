@@ -90,19 +90,35 @@ function GateForm() {
           <label>Înălțime (mm): </label>
           <input type="number" name="inaltime" value={formData.inaltime} onChange={handleChange} min="1000" max="2200" />
         </div>
+
         {sugestii.length > 0 && (
           <div style={{ backgroundColor: '#f8f8f8', padding: '10px', margin: '10px 0' }}>
             <strong>Sugestii pentru această înălțime:</strong>
-            <ul>
-              {sugestii.map((s, idx) => (
-                <li key={idx}>
-                  Lamele {s.lamele}, distanță {s.distanta}mm, {s.bucati} bucăți
-                  <button onClick={() => aplicaSugestie(s)} style={{ marginLeft: '10px' }}>Aplică</button>
-                </li>
-              ))}
-            </ul>
+            <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '10px' }}>
+              <thead>
+                <tr>
+                  <th style={{ border: '1px solid #ccc', padding: '5px' }}>Lamele</th>
+                  <th style={{ border: '1px solid #ccc', padding: '5px' }}>Distanță (mm)</th>
+                  <th style={{ border: '1px solid #ccc', padding: '5px' }}>Bucăți</th>
+                  <th style={{ border: '1px solid #ccc', padding: '5px' }}>Actiune</th>
+                </tr>
+              </thead>
+              <tbody>
+                {sugestii.map((s, idx) => (
+                  <tr key={idx}>
+                    <td style={{ border: '1px solid #ccc', padding: '5px' }}>{s.lamele}</td>
+                    <td style={{ border: '1px solid #ccc', padding: '5px' }}>{s.distanta}</td>
+                    <td style={{ border: '1px solid #ccc', padding: '5px' }}>{s.bucati}</td>
+                    <td style={{ border: '1px solid #ccc', padding: '5px' }}>
+                      <button onClick={() => aplicaSugestie(s)}>Aplică</button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         )}
+
         <div>
           <label>Lamele: </label>
           <select name="lamele" value={formData.lamele} onChange={handleChange}>
