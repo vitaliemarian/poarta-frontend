@@ -1,6 +1,6 @@
 // frontend/src/components/GateForm.jsx
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
 
 function GateForm() {
@@ -25,6 +25,20 @@ function GateForm() {
       [name]: type === 'checkbox' ? checked : value
     });
   };
+
+  // Calculate valid heights based on lamele and distantaLamele
+  const validInaltimi = useMemo(() => {
+    const [hLamela] = formData.lamele.split('x').map(Number);
+    const dist = Number(formData.distantaLamele);
+    const rezultat = [];
+    for (let n = 2; n < 50; n++) {
+      const inaltime = n * hLamela + (n - 1) * dist + 160;
+      if (inaltime >= 1000 && inaltime <= 2200) {
+        rezultat.push(inaltime);
+      }
+    }
+    return rezultat.reverse();
+  }, [formData.lamele, formData.distantaLamele]);
 
   useEffect(() => {
     const delayDebounce = setTimeout(async () => {
@@ -64,10 +78,7 @@ function GateForm() {
         <div>
           <label>Înălțime (mm): </label>
           <select name="inaltime" value={formData.inaltime} onChange={handleChange}>
-            {[...Array(13)].map((_, i) => {
-              const val = 1000 + i * 100;
-              return <option key={val} value={val}>{val}</option>;
-            })}
+            {validInaltimi.map(val => <option key={val} value={val}>{val}</option>)}
           </select>
         </div>
         <div>
