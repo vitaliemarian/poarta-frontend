@@ -17,6 +17,7 @@ function GateForm() {
   });
 
   const [rezultat, setRezultat] = useState(null);
+  const [sugestii, setSugestii] = useState([]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -26,7 +27,6 @@ function GateForm() {
     });
   };
 
-  // Calculate valid heights based on lamele and distantaLamele
   const validInaltimi = useMemo(() => {
     const [hLamela] = formData.lamele.split('x').map(Number);
     const dist = Number(formData.distantaLamele);
@@ -40,18 +40,34 @@ function GateForm() {
     return rezultat.reverse();
   }, [formData.lamele, formData.distantaLamele]);
 
+  const sugestiiDinInaltime = useMemo(() => {
+    const rezultate = [];
+    const tinta = Number(formData.inaltime);
+    [100, 80, 60, 40].forEach(h => {
+      for (let d = 20; d <= 100; d += 5) {
+        for (let n = 2; n < 50; n++) {
+          const total = n * h + (n - 1) * d + 160;
+          if (total === tinta) {
+            rezultate.push({ lamele: `${h}x20`, distanta: d, bucati: n });
+          }
+        }
+      }
+    });
+    return rezultate;
+  }, [formData.inaltime]);
+
   useEffect(() => {
     const delayDebounce = setTimeout(async () => {
       try {
         const response = await axios.post('https://poarta-backend.onrender.com/calculate', formData);
         setRezultat(response.data);
+        setSugestii(sugestiiDinInaltime);
       } catch (err) {
         console.error('Eroare calcul:', err);
       }
     }, 300);
-
     return () => clearTimeout(delayDebounce);
-  }, [formData]);
+  }, [formData, sugestiiDinInaltime]);
 
   const handleExportPdf = async () => {
     const response = await axios.post('https://poarta-backend.onrender.com/generate-pdf', rezultat, {
@@ -78,9 +94,21 @@ function GateForm() {
         <div>
           <label>Înălțime (mm): </label>
           <select name="inaltime" value={formData.inaltime} onChange={handleChange}>
-            {validInaltimi.map(val => <option key={val} value={val}>{val}</option>)}
+            {Array.from({ length: 13 }, (_, i) => 1000 + i * 100).map(val => <option key={val} value={val}>{val}</option>)}
           </select>
         </div>
+        {sugestii.length > 0 && (
+          <div style={{ backgroundColor: '#f8f8f8', padding: '10px', margin: '10px 0' }}>
+            <strong>Sugestii pentru această înălțime:</strong>
+            <ul>
+              {sugestii.map((s, idx) => (
+                <li key={idx}>
+                  Lamele {s.lamele}, distanță {s.distanta}mm, {s.bucati} bucăți
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
         <div>
           <label>Lamele: </label>
           <select name="lamele" value={formData.lamele} onChange={handleChange}>
